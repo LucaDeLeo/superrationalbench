@@ -1,5 +1,14 @@
 # CIRRUS-24 Superrational Cooperation Experiment – Product Requirements Document
 
+## 🚀 Quick Start for Course Project
+
+### Pilot Study Documents (Read These First!)
+1. **[Pilot Study Scope](./17-pilot-study-scope.md)** - Complete 4-5 hour implementation plan
+2. **[Pilot Experimental Design](./4a-pilot-experimental-design.md)** - Simplified 2×2 factorial design
+3. **[Pilot Success Metrics](./2a-pilot-success-metrics.md)** - Achievable success criteria
+
+> The pilot study is a scientifically valid subset that tests the core hypothesis in 4-5 hours.
+
 ## Table of Contents
 
 - [CIRRUS-24 Superrational Cooperation Experiment – Product Requirements Document](#table-of-contents)
