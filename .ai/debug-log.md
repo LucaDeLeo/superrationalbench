@@ -15,3 +15,9 @@
   - Result: Full cooperation test suite (SeededRandom + pilot runner) passed with dry-run OpenRouter responses.
 - Updated pilot defaults to Gemini Flash lineup and reran `bun test`
   - Result: Suite remains green with dry-run coverage across new model roster.
+- Ran `OPENROUTER_API_KEY=dummy COOPERATION_DRY_RUN=1 bun run src/cooperation/index.ts run-pilot --runs=2 --output results/cooperation/manual-demo`
+  - Result: Dry-run pilot generated 24 trial files plus manifest/summary under `results/cooperation/`.
+- Ran `OPENROUTER_API_KEY=dummy bun run src/cooperation/index.ts analyze-pilot --manifest results/cooperation/pilot-2025-09-22T04-55-22-118Z-manifest.json`
+  - Result: Analyzer produced summary JSON, logged pooled metrics, and exited with threshold warnings as expected for undersized dry-run batches.
+- Ran `bun test`
+  - Result: All cooperation and analysis unit tests pass, including new statistical analyzer coverage.

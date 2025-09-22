@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from "fs/promises";
+import type { Dirent } from "fs";
+import { mkdir, readdir, stat, writeFile } from "fs/promises";
 import { join } from "path";
 import { generateText, type LanguageModelV1 } from "ai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
@@ -15,6 +16,7 @@ import type {
 } from "./types";
 import { generateScenario } from "./scenario-generator";
 import { SeededRandom, createSeededRandom } from "./seeded-random";
+import { generateAnalysisReport } from "../analysis/report-generator";
 
 export { SeededRandom, createSeededRandom };
 
@@ -266,6 +268,65 @@ function sanitizeFilenameSegment(value: string): string {
 
 function formatIsoForId(timestamp: number): string {
   return new Date(timestamp).toISOString().replace(/[:.]/g, "-");
+}
+
+async function collectManifestFiles(
+  directory: string,
+  depth: number,
+): Promise<string[]> {
+  if (depth < 0) {
+    return [];
+  }
+
+  let entries: Dirent[];
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      return [];
+    }
+    throw error;
+  }
+
+  const manifests: string[] = [];
+  for (const entry of entries) {
+    const entryPath = join(directory, entry.name);
+    if (entry.isFile() && entry.name.endsWith("-manifest.json")) {
+      manifests.push(entryPath);
+    }
+    if (entry.isDirectory() && depth > 0) {
+      manifests.push(...(await collectManifestFiles(entryPath, depth - 1)));
+    }
+  }
+  return manifests;
+}
+
+async function findLatestManifest(baseDirectory: string): Promise<string | null> {
+  const manifests = await collectManifestFiles(baseDirectory, 2);
+  if (manifests.length === 0) {
+    return null;
+  }
+
+  let latestPath: string | null = null;
+  let latestTimestamp = -Infinity;
+
+  for (const manifestPath of manifests) {
+    try {
+      const fileStat = await stat(manifestPath);
+      if (fileStat.mtimeMs > latestTimestamp) {
+        latestTimestamp = fileStat.mtimeMs;
+        latestPath = manifestPath;
+      }
+    } catch (error) {
+      console.warn(
+        `[analyze-pilot] Skipping manifest ${manifestPath}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  return latestPath;
 }
 
 interface PilotPromptContext {
@@ -744,6 +805,65 @@ if (import.meta.main) {
         console.error(error instanceof Error ? error.message : error);
         process.exitCode = 1;
       });
+  } else if (command === "analyze-pilot") {
+    let manifestPath: string | undefined;
+    let outputDirectory: string | undefined;
+    let silent = false;
+
+    for (const arg of rest) {
+      if (arg.startsWith("--manifest=")) {
+        const value = arg.slice("--manifest=".length).trim();
+        if (value.length > 0) {
+          manifestPath = value;
+        }
+      } else if (arg.startsWith("--output=")) {
+        const value = arg.slice("--output=".length).trim();
+        if (value.length > 0) {
+          outputDirectory = value;
+        }
+      } else if (arg === "--silent") {
+        silent = true;
+      }
+    }
+
+    (async () => {
+      let resolvedManifest = manifestPath;
+      if (!resolvedManifest) {
+        const detected = await findLatestManifest(RESULTS_DIRECTORY);
+        if (!detected) {
+          console.error(
+            `[analyze-pilot] Unable to locate a pilot manifest under ${RESULTS_DIRECTORY}. Pass --manifest=<path>.`,
+          );
+          process.exitCode = 1;
+          return;
+        }
+        resolvedManifest = detected;
+        if (!silent) {
+          console.log(`[analyze-pilot] Auto-selected manifest -> ${detected}`);
+        }
+      }
+
+      try {
+        const report = await generateAnalysisReport({
+          manifestPath: resolvedManifest,
+          outputDirectory,
+          silent,
+        });
+
+        if (report.warnings.length > 0) {
+          console.warn(
+            `[analyze-pilot] ${report.warnings.length} threshold breach(s) detected.`,
+          );
+          process.exitCode = 1;
+        }
+      } catch (error) {
+        console.error(error instanceof Error ? error.message : error);
+        process.exitCode = 1;
+      }
+    })().catch((error) => {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    });
   } else if (command === "preview-scenarios") {
     let seed: number | undefined;
     let echo = false;

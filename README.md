@@ -32,6 +32,13 @@ If you want to see the results, not too hard to run! Be warned, this will cost a
   - `bun run src/cooperation/index.ts run-pilot --models="anthropic/claude-3.5-sonnet,google/gemini-2.0-flash-001,anthropic/claude-3.7-sonnet" --runs=5 --seed=1337`
 - Results land under `results/cooperation/` including per-trial JSON files, a manifest, and summary coverage report for quick QA
 
+### Analyze pilot cooperation results
+
+- After a pilot batch finishes, run `bun run src/cooperation/index.ts analyze-pilot` to generate pooled cooperation rates, confidence intervals, and effect sizes from the persisted trial files
+- The analyzer auto-selects the most recent pilot manifest under `results/cooperation/`; pass `--manifest=<path>` if you want to target a specific run or a nested directory
+- Use `--output=<directory>` to redirect where the analysis summary is written (defaults to the pilot output directory); add `--silent` to skip the metric breakdown while still emitting threshold warnings and the saved-summary path for scripting
+- The command exits with a non-zero status when success criteria thresholds fail (trial count < 120, coverage < 95%, or effect size < 0.5) so CI/QA flows can halt on regressions
+
 ### Run the main test
 
 1. Install packages with `bun install`
