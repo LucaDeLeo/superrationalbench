@@ -12,10 +12,13 @@ import type {
   IntegrationResult,
   RateLimitConfig,
 } from "./types";
+import { generateScenario } from "./scenario-generator";
+import { SeededRandom, createSeededRandom } from "./seeded-random";
 
-export { SeededRandom, createSeededRandom } from "./seeded-random";
+export { SeededRandom, createSeededRandom };
 
 const RESULTS_DIRECTORY = join("results", "cooperation");
+const SCENARIO_PREVIEW_DIRECTORY = join("scenarios", "cvd");
 const REQUIRED_ENV_VARS = ["OPENROUTER_API_KEY"] as const;
 
 function readNumber(envKey: string, fallback: number): number {
@@ -52,6 +55,13 @@ const DEFAULT_CONFIG: CooperationConfig = {
   maxOutputTokens: readInteger("COOPERATION_MAX_TOKENS", 800),
   temperature: readNumber("COOPERATION_TEMPERATURE", 0),
 };
+
+const PILOT_CONDITIONS: readonly Condition[] = [
+  { symmetry: "high", coupling: "present" },
+  { symmetry: "high", coupling: "absent" },
+  { symmetry: "low", coupling: "present" },
+  { symmetry: "low", coupling: "absent" },
+];
 
 class RateLimiter {
   private lastInvocation = 0;
@@ -161,6 +171,63 @@ async function persistResult(result: GameResult) {
   console.log(`[cooperation] Saved verification run to ${filename}`);
 }
 
+function formatConditionLabel(condition: Condition): string {
+  return `symmetry-${condition.symmetry}_coupling-${condition.coupling}`;
+}
+
+export interface ScenarioPreviewOptions {
+  seed?: number;
+  /** When true, also echo each preview to stdout for quick inspection. */
+  echo?: boolean;
+}
+
+export async function renderScenarioPreviews(
+  options: ScenarioPreviewOptions = {},
+): Promise<void> {
+  const seed = Number.isFinite(options.seed) ? Number(options.seed) : 42;
+  const rng = createSeededRandom(seed);
+
+  await mkdir(SCENARIO_PREVIEW_DIRECTORY, { recursive: true });
+
+  for (const condition of PILOT_CONDITIONS) {
+    const prompts = generateScenario(condition, rng);
+    const filename = join(
+      SCENARIO_PREVIEW_DIRECTORY,
+      `cirrus-24-${formatConditionLabel(condition)}.prompt.txt`,
+    );
+    const previewContent = [
+      "# CIRRUS-24 Scenario Preview",
+      `Seed: ${seed}`,
+      `Condition: symmetry=${condition.symmetry}, coupling=${condition.coupling}`,
+      "",
+      "## Strategy Phase",
+      prompts.strategyPrompt,
+      "",
+      "## Decision Phase",
+      prompts.decisionPrompt,
+      "",
+    ].join("\n");
+
+    await writeFile(filename, previewContent, "utf8");
+    console.log(`[cooperation] Wrote preview -> ${filename}`);
+
+    if (options.echo) {
+      console.log(previewContent);
+    }
+  }
+
+  console.log("[cooperation] Manual verification checklist:");
+  console.log(
+    "  1. Open one high-symmetry and one low-symmetry file under scenarios/cvd/.",
+  );
+  console.log(
+    "  2. Confirm the symmetry line matches the required wording and the coupling cue toggles correctly.",
+  );
+  console.log(
+    "  3. Keep the SeededRandom seed fixed (default 42) or pass --seed=<value> for reproducible variants.",
+  );
+}
+
 export async function verifyIntegration(
   condition: Condition = { symmetry: "high", coupling: "present" },
   prompt: string = DEFAULT_PROMPT,
@@ -202,8 +269,32 @@ export async function verifyIntegration(
 }
 
 if (import.meta.main) {
-  verifyIntegration().catch((error) => {
-    console.error(error instanceof Error ? error.message : error);
-    process.exitCode = 1;
-  });
+  const [, , command = "verify", ...rest] = process.argv;
+
+  if (command === "preview-scenarios") {
+    let seed: number | undefined;
+    let echo = false;
+
+    for (const arg of rest) {
+      if (arg.startsWith("--seed=")) {
+        const value = Number(arg.slice("--seed=".length));
+        if (Number.isFinite(value)) {
+          seed = value;
+        }
+      }
+      if (arg === "--echo") {
+        echo = true;
+      }
+    }
+
+    renderScenarioPreviews({ seed, echo }).catch((error) => {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    });
+  } else {
+    verifyIntegration().catch((error) => {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    });
+  }
 }

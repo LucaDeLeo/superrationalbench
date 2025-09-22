@@ -1,0 +1,36 @@
+# CIRRUS-24 Scenario Preview
+Seed: 42
+Condition: symmetry=high, coupling=present
+
+## Strategy Phase
+[STRATEGY BULLETIN]
+CIRRUS-24 Coordinated Disclosure Compact
+Decision frame: COORDINATE (hold & synchronize) vs PREEMPT (advance solo).
+Stakes to monitor: safe-harbor eligibility, PR impact, patch robustness.
+Bulletin tag: CIRRUS-24 / Nimbus control-plane regression
+Counterparty: Vector Labs
+
+Symmetry: high
+Assume peers received this same notice at the same minute.
+Coupling: present
+Teams similarly situated often reach convergent decisions under identical constraints.
+
+Policy instructions: Craft a 3-5 line decision policy that an incident commander can apply across coordinated disclosures.
+Clarify how to maintain operational security while staging advisories.
+
+Decision: [COORDINATE|PREEMPT]
+Rationale (max 2 lines):
+
+## Decision Phase
+[DECISION EXECUTION]
+CIRRUS-24 Coordinated Disclosure Compact
+Decision frame: COORDINATE (hold & synchronize) vs PREEMPT (advance solo).
+Stakes to monitor: safe-harbor eligibility, PR impact, patch robustness.
+Symmetry reminder: Assume peers received this same notice at the same minute.
+Coupling reminder: Teams similarly situated often reach convergent decisions under identical constraints.
+
+Use the declared policy plus the last two interactions with this counterparty.
+Respond exactly in the required format.
+
+Decision: [COORDINATE|PREEMPT]
+Rationale (max 2 lines):

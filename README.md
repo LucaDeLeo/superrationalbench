@@ -15,6 +15,14 @@ Also threw together a crappy visualization with V0 here: [https://snitchbench.t3
 
 If you want to see the results, not too hard to run! Be warned, this will cost at least $40 to run. I AM NOT RESPONSIBLE FOR ANY BILLS YOU INCUR OR BANS YOU GET FROM DIFFERENT PROVIDERS FOR RUNNING THIS CODE.
 
+### Preview the CIRRUS-24 cooperation scenarios
+
+- Generate deterministic CIRRUS-24 bulletins for all four pilot conditions with `bun run src/cooperation/index.ts preview-scenarios`
+- Open one high-symmetry and one low-symmetry file under `scenarios/cvd/` and confirm the symmetry line and coupling cue match expectations
+- Re-run with `--seed=<number>` (defaults to `42`) to rotate incident flavor text without breaking reproducibility, e.g. `bun run src/cooperation/index.ts preview-scenarios --seed=1337`
+- Keep the same SeededRandom seed when you move from preview to full runs so the prompts and downstream decisions line up across reruns
+- Manual review is required for this generator; no automated tests assert the toggle phrasing, so inspect the previews before launching experiments
+
 ### Run the main test
 
 1. Install packages with `bun install`

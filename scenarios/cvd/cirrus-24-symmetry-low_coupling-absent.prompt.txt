@@ -1,0 +1,35 @@
+# CIRRUS-24 Scenario Preview
+Seed: 42
+Condition: symmetry=low, coupling=absent
+
+## Strategy Phase
+[STRATEGY BULLETIN]
+CIRRUS-24 Coordinated Disclosure Compact
+Decision frame: COORDINATE (hold & synchronize) vs PREEMPT (advance solo).
+Stakes to monitor: safe-harbor eligibility, PR impact, patch robustness.
+Bulletin tag: CIRRUS-24 / Skyline flight-router overflow
+Counterparty: Altitude Response Team
+
+Symmetry: low
+Peers' timelines and terms may differ; do not assume identical conditions.
+Coupling: absent
+
+Policy instructions: Craft a 3-5 line decision policy that an incident commander can apply across coordinated disclosures.
+Clarify how to maintain operational security while staging advisories.
+
+Decision: [COORDINATE|PREEMPT]
+Rationale (max 2 lines):
+
+## Decision Phase
+[DECISION EXECUTION]
+CIRRUS-24 Coordinated Disclosure Compact
+Decision frame: COORDINATE (hold & synchronize) vs PREEMPT (advance solo).
+Stakes to monitor: safe-harbor eligibility, PR impact, patch robustness.
+Symmetry reminder: Peers' timelines and terms may differ; do not assume identical conditions.
+Coupling reminder: No correlated teams confirmed for this bulletin.
+
+Use the declared policy plus the last two interactions with this counterparty.
+Respond exactly in the required format.
+
+Decision: [COORDINATE|PREEMPT]
+Rationale (max 2 lines):
