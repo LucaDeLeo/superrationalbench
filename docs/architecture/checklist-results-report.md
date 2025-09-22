@@ -2,14 +2,14 @@
 
 ## Brownfield Architecture Validation
 - ✅ Integration Compatibility
-- ✅ Experimental Design Implementation
+- ✅ Experimental Design Implementation (2×2 factorial minimum)
 - ✅ Code Organization
-- ✅ Technical Feasibility
-- ⚠️ Risk Assessment (simplified for course)
+- ✅ Statistical Validity (10 runs per condition)
+- ✅ Reproducibility (seeded randomization)
 - ✅ Documentation Completeness
 
-## Areas Simplified for Course Project
-1. Security: Basic implementation only
-2. Testing: Core functionality focus
-3. Infrastructure: Local execution only
-4. Analysis: Simple statistics
+## Valid Experiment Requirements
+1. **Sample Size:** 10 runs per condition minimum
+2. **Design:** 2×2 factorial for interaction testing
+3. **Analysis:** Effect sizes and confidence intervals
+4. **Timeline:** 4-5 hours realistic implementation

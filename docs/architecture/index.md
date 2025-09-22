@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [SnitchBench Brownfield Enhancement Architecture](#table-of-contents)
-  - [🚀 Quick Start (If You're in a Rush)](./quick-start-if-youre-in-a-rush.md)
+  - [🚀 Quick Start (Valid Experiment in 4-5 Hours)](./quick-start-valid-experiment-in-4-5-hours.md)
   - [Change Log](./change-log.md)
   - [Introduction](./introduction.md)
   - [Existing Project Analysis](./existing-project-analysis.md)
@@ -42,7 +42,7 @@
     - [Quick Security Checklist](./security-integration-simplified-for-research.md#quick-security-checklist)
   - [Checklist Results Report](./checklist-results-report.md)
     - [Brownfield Architecture Validation](./checklist-results-report.md#brownfield-architecture-validation)
-    - [Areas Simplified for Course Project](./checklist-results-report.md#areas-simplified-for-course-project)
+    - [Valid Experiment Requirements](./checklist-results-report.md#valid-experiment-requirements)
   - [Next Steps](./next-steps.md)
     - [Fastest Path (2-3 hours)](./next-steps.md#fastest-path-2-3-hours)
     - [If You Only Have 1 Hour](./next-steps.md#if-you-only-have-1-hour)
