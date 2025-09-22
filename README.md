@@ -39,6 +39,13 @@ If you want to see the results, not too hard to run! Be warned, this will cost a
 - Use `--output=<directory>` to redirect where the analysis summary is written (defaults to the pilot output directory); add `--silent` to skip the metric breakdown while still emitting threshold warnings and the saved-summary path for scripting
 - The command exits with a non-zero status when success criteria thresholds fail (trial count < 120, coverage < 95%, or effect size < 0.5) so CI/QA flows can halt on regressions
 
+### Pilot reporting
+
+- End the 4-5 hour pilot loop by running `bun run src/cooperation/index.ts run-pilot` -> `bun run src/cooperation/index.ts analyze-pilot`; the analyzer now drops `results/cooperation/pilot-summary.md` alongside the JSON payload for stakeholder review
+- Re-run `analyze-pilot` whenever you change manifests, prompts, or rosters; pass `--output=<dir>` if the Markdown summary should live next to ad-hoc trial folders
+- Share only the allowed claims: directional cooperation rates, coverage checks, practical effect directionality, and explicit threshold warnings captured in the Markdown file; no statistical-significance or production-readiness guarantees until the full study lands
+- Keep limitations visible when sharing results (runs per condition, current model list, CIRRUS-24 domain); the summary file enumerates these so downstream teams remember the pilot scope
+
 ### Run the main test
 
 1. Install packages with `bun install`

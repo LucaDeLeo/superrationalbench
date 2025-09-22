@@ -33,7 +33,11 @@ function buildDecisionSeries(total: number, coordinateCount: number): DecisionVa
 async function writeCliManifest(
   baseDir: string,
   specs: ConditionSpec[],
-): Promise<{ manifestPath: string; summaryPath: string }> {
+): Promise<{
+  manifestPath: string;
+  summaryPath: string;
+  markdownPath: string;
+}> {
   const trialFiles: string[] = [];
   let timestamp = Date.now();
 
@@ -85,6 +89,7 @@ async function writeCliManifest(
   return {
     manifestPath,
     summaryPath: join(baseDir, `${PILOT_ID}-analysis.json`),
+    markdownPath: join(baseDir, "pilot-summary.md"),
   };
 }
 
@@ -92,7 +97,9 @@ describe("analyze-pilot CLI", () => {
   it("exits non-zero when analysis warnings are present", async () => {
     const tempDir = await mkdtemp(join(tmpdir(), "snitchbench-cli-"));
 
-    const { manifestPath, summaryPath } = await writeCliManifest(tempDir, [
+    const { manifestPath, summaryPath, markdownPath } = await writeCliManifest(
+      tempDir,
+      [
       {
         condition: { symmetry: "high", coupling: "present" },
         decisions: buildDecisionSeries(4, 4),
@@ -109,7 +116,8 @@ describe("analyze-pilot CLI", () => {
         condition: { symmetry: "low", coupling: "absent" },
         decisions: buildDecisionSeries(4, 0),
       },
-    ]);
+    ],
+    );
 
     try {
       const cliProcess = Bun.spawn({
@@ -134,6 +142,7 @@ describe("analyze-pilot CLI", () => {
 
       expect(cliProcess.exitCode).toBe(1);
       expect(stdout).toContain("Analysis summary saved");
+      expect(stdout).toContain("Markdown summary saved");
       expect(stderr).toContain("threshold breach");
 
       await access(summaryPath);
@@ -141,6 +150,85 @@ describe("analyze-pilot CLI", () => {
       expect(Array.isArray(summary.warnings)).toBe(true);
       expect(summary.warnings.length).toBeGreaterThan(0);
       expect(summary.warnings.some((warning: { code: string }) => warning.code === "LOW_TRIALS")).toBe(true);
+
+      await access(markdownPath);
+      const markdown = await readFile(markdownPath, "utf8");
+      expect(markdown).toContain(`# Pilot Summary: ${PILOT_ID}`);
+      expect(markdown).toContain(summary.manifestPath);
+      expect(markdown).toContain("Threshold Warnings");
+      expect(markdown).toContain("[LOW_TRIALS] Total analyzed trials");
+    } finally {
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it("emits markdown without warnings when thresholds are satisfied", async () => {
+    const tempDir = await mkdtemp(join(process.cwd(), "tmp-analyze-pilot-success-"));
+
+    const runsPerCondition = 40;
+
+    const { manifestPath, summaryPath, markdownPath } = await writeCliManifest(
+      tempDir,
+      [
+        {
+          condition: { symmetry: "high", coupling: "present" },
+          decisions: buildDecisionSeries(runsPerCondition, 0),
+        },
+        {
+          condition: { symmetry: "high", coupling: "absent" },
+          decisions: buildDecisionSeries(runsPerCondition, 0),
+        },
+        {
+          condition: { symmetry: "low", coupling: "present" },
+          decisions: buildDecisionSeries(runsPerCondition, runsPerCondition),
+        },
+        {
+          condition: { symmetry: "low", coupling: "absent" },
+          decisions: buildDecisionSeries(runsPerCondition, 0),
+        },
+      ],
+    );
+
+    try {
+      const cliProcess = Bun.spawn({
+        cmd: [
+          "bun",
+          "run",
+          "src/cooperation/index.ts",
+          "analyze-pilot",
+          `--manifest=${manifestPath}`,
+          `--output=${tempDir}`,
+          "--silent",
+        ],
+        cwd: process.cwd(),
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+
+      await cliProcess.exited;
+
+      const stdout = await new Response(cliProcess.stdout).text();
+      const stderr = await new Response(cliProcess.stderr).text();
+
+      expect(cliProcess.exitCode).toBe(0);
+      expect(stdout).toContain("Analysis summary saved");
+      expect(stdout).toContain("Markdown summary saved");
+      expect(stderr.trim()).toBe("");
+
+      await access(summaryPath);
+      const summary = JSON.parse(await readFile(summaryPath, "utf8"));
+      expect(Array.isArray(summary.warnings)).toBe(true);
+      expect(summary.warnings.length).toBe(0);
+
+      await access(markdownPath);
+      const markdown = await readFile(markdownPath, "utf8");
+      expect(markdown).toContain(`# Pilot Summary: ${PILOT_ID}`);
+      expect(markdown).toContain("No threshold warnings triggered");
+
+      const relativeManifestPath = relative(process.cwd(), manifestPath).replace(/\\/g, "/");
+      expect(relativeManifestPath.startsWith(".."))
+        .toBe(false);
+      expect(markdown).toContain(relativeManifestPath);
     } finally {
       await rm(tempDir, { recursive: true, force: true });
     }
