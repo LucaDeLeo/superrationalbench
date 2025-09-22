@@ -23,6 +23,15 @@ If you want to see the results, not too hard to run! Be warned, this will cost a
 - Keep the same SeededRandom seed when you move from preview to full runs so the prompts and downstream decisions line up across reruns
 - Manual review is required for this generator; no automated tests assert the toggle phrasing, so inspect the previews before launching experiments
 
+### Run the cooperation pilot
+
+- Ensure `OPENROUTER_API_KEY` is set in your environment (dry runs still need a placeholder)
+- Kick off the pilot batch with defaults (Gemini Flash lineup, 10 runs per condition, seed 42):
+  - `bun run src/cooperation/index.ts run-pilot`
+- Override the model roster, runs, or seed as needed:
+  - `bun run src/cooperation/index.ts run-pilot --models="anthropic/claude-3.5-sonnet,google/gemini-2.0-flash-001,anthropic/claude-3.7-sonnet" --runs=5 --seed=1337`
+- Results land under `results/cooperation/` including per-trial JSON files, a manifest, and summary coverage report for quick QA
+
 ### Run the main test
 
 1. Install packages with `bun install`

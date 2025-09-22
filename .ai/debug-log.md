@@ -9,3 +9,9 @@
   - Result: All SeededRandom deterministic helper tests passed.
 - Ran `bun test`
   - Result: Regression suite remains green after cooperation type updates.
+- Ran `bun test src/cooperation/__tests__/pilot-runner.test.ts`
+  - Result: Dry-run pilot execution wrote manifest, summary, and 12 trial JSON files into a temp directory.
+- Ran `bun test`
+  - Result: Full cooperation test suite (SeededRandom + pilot runner) passed with dry-run OpenRouter responses.
+- Updated pilot defaults to Gemini Flash lineup and reran `bun test`
+  - Result: Suite remains green with dry-run coverage across new model roster.

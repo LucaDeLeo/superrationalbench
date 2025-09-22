@@ -54,6 +54,10 @@ export interface GameResult {
   decision: AgentDecision | null;
   response: string;
   timestamp: number;
+  /** Sequential index (1-based) of this trial within its condition/model batch. */
+  runIndex?: number;
+  /** Identifier of the batch (e.g., pilot run id) that produced this trial. */
+  batchId?: string;
 }
 
 export interface ExperimentBatch {
@@ -69,6 +73,12 @@ export interface ExperimentBatch {
   completedAt: number;
   /** Seed value that produced the ordering of trials within this batch. */
   seed: number;
+  /** Number of trials executed per condition in this batch. */
+  runsPerCondition?: number;
+  /** Total number of trials contained in this batch. */
+  totalTrials?: number;
+  /** Relative file paths for the persisted results backing this batch. */
+  trialFilePaths?: string[];
 }
 
 export interface PersistedResult {
