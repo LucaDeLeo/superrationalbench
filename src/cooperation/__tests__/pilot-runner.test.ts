@@ -18,8 +18,8 @@ describe("runPilotExperiment", () => {
 
     const models = [
       "google/gemini-2.5-flash",
-      "google/gemini-2.0-flash-001",
-      "google/gemini-1.5-flash",
+      "openai/gpt-5-mini",
+      "meta-llama/llama-3.1-405b-instruct",
     ];
 
     try {
