@@ -1,18 +1,18 @@
 # CIRRUS-24 Superrational Cooperation Experiment – Product Requirements Document
 
-## 🚀 Quick Start for Course Project
-
-### Pilot Study Documents (Read These First!)
-1. **[Pilot Study Scope](./17-pilot-study-scope.md)** - Complete 4-5 hour implementation plan
-2. **[Pilot Experimental Design](./4a-pilot-experimental-design.md)** - Simplified 2×2 factorial design
-3. **[Pilot Success Metrics](./2a-pilot-success-metrics.md)** - Achievable success criteria
-
-> The pilot study is a scientifically valid subset that tests the core hypothesis in 4-5 hours.
-
 ## Table of Contents
 
 - [CIRRUS-24 Superrational Cooperation Experiment – Product Requirements Document](#table-of-contents)
   - [Executive Summary](./executive-summary.md)
+  - [🚀 Pilot Study Scope (4-5 Hour Implementation)](./pilot-study-scope-4-5-hour-implementation.md)
+    - [Quick Start for Course Project](./pilot-study-scope-4-5-hour-implementation.md#quick-start-for-course-project)
+    - [Pilot Design Overview](./pilot-study-scope-4-5-hour-implementation.md#pilot-design-overview)
+      - [Simplified 2×2 Factorial (Not 2×2×2)](./pilot-study-scope-4-5-hour-implementation.md#simplified-22-factorial-not-222)
+      - [Sample Size & Scope](./pilot-study-scope-4-5-hour-implementation.md#sample-size-scope)
+      - [Analysis Approach](./pilot-study-scope-4-5-hour-implementation.md#analysis-approach)
+    - [Implementation Timeline](./pilot-study-scope-4-5-hour-implementation.md#implementation-timeline)
+    - [What You Can Claim](./pilot-study-scope-4-5-hour-implementation.md#what-you-can-claim)
+    - [Success Criteria for Pilot](./pilot-study-scope-4-5-hour-implementation.md#success-criteria-for-pilot)
   - [1. Goals & Background](./1-goals-background.md)
     - [Goals](./1-goals-background.md#goals)
     - [Claims We Are Testing (Pre-registered)](./1-goals-background.md#claims-we-are-testing-pre-registered)
